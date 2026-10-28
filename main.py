@@ -2,8 +2,9 @@
 
 from copy import deepcopy
 
-from customers import display_customers, register_customer
+from customers import display_customers, get_customer, register_customer
 from products import add_product, display_products, get_product, update_product
+from sales import display_sales, record_sale
 from storage import StorageError, load_store, save_store
 from validation import normalize_text
 
@@ -19,11 +20,6 @@ Grocery Store Management System
 7. View all sales
 8. Exit the application
 """
-
-UPCOMING_FEATURES = {
-    "6": "Recording sales will be available in Milestone 4.",
-    "7": "Viewing sales will be available in Milestone 4.",
-}
 
 
 def display_menu():
@@ -80,11 +76,31 @@ def register_customer_from_input(store):
     return draft
 
 
+def record_sale_from_input(store):
+    """Collect a purchase and save both the transaction and new stock level."""
+    if not store["customers"]:
+        raise ValueError("Register a customer with option 4 before recording a sale.")
+    if not store["products"]:
+        raise ValueError("Add a product with option 1 before recording a sale.")
+    customer_id = normalize_text(input("Customer ID: "), "Customer ID")
+    get_customer(store["customers"], customer_id)
+    product_id = normalize_text(input("Product ID: "), "Product ID")
+    product = get_product(store["products"], product_id)
+    print(f"{product['name']}: price {product['price']}, stock {product['quantity']}.")
+    quantity = input("Quantity purchased: ")
+
+    draft = deepcopy(store)
+    sale = record_sale(draft, customer_id, product_id, quantity)
+    save_store(draft)
+    print(f"Sale '{sale['sale_id']}' recorded and saved. Total: {sale['total_price']}")
+    return draft
+
+
 def main():
     """Load the store and repeat the menu until the user exits.
 
     Return a nonzero exit status if the store cannot be loaded safely.
-    Product and customer changes are accepted only after a successful JSON save.
+    Changes are accepted only after a successful JSON save.
     """
     try:
         store = load_store()
@@ -115,8 +131,10 @@ def main():
                 store = register_customer_from_input(store)
             elif choice == "5":
                 display_customers(store["customers"])
-            elif choice in UPCOMING_FEATURES:
-                print(UPCOMING_FEATURES[choice])
+            elif choice == "6":
+                store = record_sale_from_input(store)
+            elif choice == "7":
+                display_sales(store["sales"])
             else:
                 print("Invalid choice. Please enter a number from 1 to 8.")
         except ValueError as error:

@@ -33,10 +33,11 @@ class MenuTests(unittest.TestCase):
         self.assertEqual(output.count("Invalid choice."), 5)
         self.assertEqual(output.count("1. Add a product"), 6)
 
-    def test_upcoming_options_explain_status_and_keep_menu_running(self):
+    def test_sales_options_explain_missing_customer_and_empty_history(self):
         status, output = self.run_menu(["6", "7", "8"])
         self.assertEqual(status, 0)
-        self.assertEqual(output.count("will be available"), 2)
+        self.assertIn("Register a customer with option 4", output)
+        self.assertIn("No sales recorded", output)
         self.assertEqual(output.count("1. Add a product"), 3)
 
     def test_add_and_display_product_from_menu(self):

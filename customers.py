@@ -40,6 +40,14 @@ def validate_customers(customers):
         normalize_email(customer["email"])
 
 
+def get_customer(customers, customer_id):
+    """Find a registered customer by a trimmed, case-sensitive ID."""
+    customer_id = normalize_text(customer_id, "Customer ID")
+    if customer_id not in customers:
+        raise ValueError(f"Customer '{customer_id}' does not exist.")
+    return customers[customer_id]
+
+
 def register_customer(customers, customer_id, name, email):
     """Register a unique ID only after all customer fields pass validation."""
     customer_id = normalize_text(customer_id, "Customer ID")

@@ -6,17 +6,17 @@ time using regular functions, modules, lists, and dictionaries.
 
 ## Current progress
 
-**Milestone 3: customer management.** You can manage products with options 1-3,
-register customers with option 4, and view customers with option 5. Successful
-changes are saved to JSON and loaded when you restart. Options 6-7 explain the
-upcoming sales milestone. Option 8 exits.
+**Milestone 4: sales management.** All eight menu options are implemented.
+You can manage products, register customers, record purchases, and view all
+store records. Successful changes are saved to JSON and loaded when you
+restart. Milestone 5 will complete the final submission checks and documentation.
 
 | Milestone | Scope | Status |
 | --- | --- | --- |
 | 1 | Repository setup, menu, JSON storage, initial tests and documentation | Complete |
 | 2 | Add, update, and display products; validate IDs, prices, and stock | Complete |
 | 3 | Register and display customers; validate IDs, names, and email | Complete |
-| 4 | Record and display sales; calculate totals and update stock safely | Planned |
+| 4 | Record and display sales; calculate totals and update stock safely | Complete |
 | 5 | Test the complete workflow, unsuccessful transactions, and final documentation | Planned |
 
 Each completed milestone will be tested, committed, and pushed to GitHub.
@@ -101,7 +101,7 @@ active inventory and the existing JSON records unchanged.
 
 The inventory lists each product's ID, name, price with two decimal places,
 and quantity in stock. If there are no products, the application explains how
-to add one. Sales operations will follow in Milestone 4.
+to add one.
 
 ## Manage customers
 
@@ -135,6 +135,45 @@ The customer list shows every registered customer's ID, name, and email
 address. If there are no customers, the application explains how to register
 one. Customer changes and deletion are outside the assignment's requirements.
 
+## Manage sales
+
+### Record a sale (option 6)
+
+First add a product with option 1 and register a customer with option 4.
+Use options 3 and 5 to find their IDs. Then enter the customer ID, product ID,
+and quantity purchased. For the Rice and Joel examples above:
+
+```text
+Customer ID: C001
+Product ID: P001
+Rice: price 5000.00, stock 20.
+Quantity purchased: 3
+Sale 'S001' recorded and saved. Total: 15000.00
+```
+
+The sale leaves 17 units in stock. Each sale covers one product; choose
+option 6 again to record another purchase.
+
+- Both IDs must exist. IDs are trimmed and remain case-sensitive.
+- Purchase quantities must be positive whole numbers. Zero, negative,
+  fractional, blank, and nonnumeric quantities are rejected.
+- A purchase cannot exceed the available stock. Buying the last units is
+  allowed and leaves zero stock; further purchases are rejected until restocked.
+- Sale IDs are generated automatically using the first unused ID in the
+  sequence `S001`, `S002`, and so on. Saved transactions are checked to avoid
+  duplicate IDs, including after restarting.
+- Totals use exact decimal arithmetic and are saved with two decimal places.
+- A sale and its stock reduction are saved together. A rejected purchase or
+  save failure leaves both inventory and sales unchanged.
+- Later product price changes preserve the totals of earlier sales. Sales
+  records are historical; they are not recalculated from the current price.
+
+### View sales (option 7)
+
+The sales list shows sale ID, customer ID, product ID, quantity sold, and total
+price in transaction order. If no sales exist, the application explains how
+to record one.
+
 ## JSON storage
 
 On the first run, the application creates `data/store.json` with this structure:
@@ -149,16 +188,17 @@ On the first run, the application creates `data/store.json` with this structure:
 
 - Products and customers are dictionaries keyed by their unique IDs.
 - Sales are stored as a list of transaction dictionaries.
-- The file is loaded at startup. Product additions, product updates, and customer
-  registrations save after validation, so records remain available after restarting.
+- The file is loaded at startup. Product additions, product updates, customer
+  registrations, and sales save after validation, so records remain available
+  after restarting.
 - The data path is relative to `storage.py`, so starting the application from
   another working directory still uses the same file.
 - Saves write to a temporary file before replacing the existing JSON file.
   Products, customers, and sales are saved together.
 - Invalid JSON, invalid collection structures, and file access errors are
   reported. An existing invalid file is not silently reset or overwritten.
-- Storage validates collection structure, product fields, and customer fields.
-  Sales field validation will be added in Milestone 4.
+- Storage validates all record fields. Sales must have unique IDs, positive
+  quantities and totals, and references to existing products and customers.
 
 Inside the `products` collection, each product uses its ID as the dictionary key:
 
@@ -172,8 +212,8 @@ Inside the `products` collection, each product uses its ID as the dictionary key
 }
 ```
 
-New prices are stored as decimal strings and validated with Python's `Decimal`
-type to preserve exact amounts. Numeric prices from the foundation's initial
+New prices and sale totals are stored as decimal strings and validated with
+Python's `Decimal` type to preserve exact amounts. Numeric prices from the initial
 storage examples are also accepted when valid. All prices in a store should
 use the same currency; currency conversion is outside this project's scope.
 
@@ -186,6 +226,20 @@ Inside the `customers` collection, each customer uses its ID as the key:
     "email": "joel@example.com"
   }
 }
+```
+
+The `sales` collection is a list of transaction dictionaries:
+
+```json
+[
+  {
+    "sale_id": "S001",
+    "customer_id": "C001",
+    "product_id": "P001",
+    "quantity": 3,
+    "total_price": "15000.00"
+  }
+]
 ```
 
 `data/store.example.json` is a committed empty example. Actual `data/store.json`
@@ -206,6 +260,7 @@ Grocery-Store-Management-System/
 |-- main.py                  # Terminal menu and application entry point
 |-- products.py              # Product validation, operations, and inventory display
 |-- customers.py             # Customer validation, registration, and listings
+|-- sales.py                 # Transactions, exact totals, and sales history
 |-- validation.py            # Required-text validation shared by feature modules
 |-- storage.py               # JSON validation, loading, and saving
 |-- data/
@@ -215,13 +270,12 @@ Grocery-Store-Management-System/
 |   |-- test_main.py         # Menu and startup behavior
 |   |-- test_customers.py    # Customer registration and validation
 |   |-- test_products.py     # Product operations and rejected changes
+|   |-- test_sales.py        # Sales rules, menu integration, and atomic saving
 |   `-- test_storage.py      # Persistence and failure handling
 |-- .gitignore
 |-- LICENSE
 `-- README.md
 ```
-
-`sales.py` will be added in Milestone 4.
 
 ## Run the tests
 
@@ -236,12 +290,15 @@ Tests use temporary files and do not change actual store records.
 
 Current checks cover first-run file creation, saving and reloading records,
 malformed or unreadable data, invalid saves, failed file replacement, menu
-repetition, upcoming options, and clean exits. Product checks cover duplicate
+repetition and clean exits. Product checks cover duplicate
 IDs, missing records, blank fields, invalid prices and stock, partial updates,
 failed saves, interrupted entry, inventory display, and persistence across an
 application restart. Customer checks cover registration, duplicate IDs, email
 formats, invalid stored records, failed saves, interrupted entry, customer
-listings, and persistence while preserving existing products and sales.
+listings, and persistence while preserving existing products and sales. Sales
+checks cover exact totals, unique IDs, insufficient or zero stock, invalid
+quantities and references, failed saves, history display, price changes, and
+restoring transactions and stock on restart. All tests use isolated test data.
 
 ## Business rules and remaining work
 
@@ -249,11 +306,12 @@ listings, and persistence while preserving existing products and sales.
   prices, and nonnegative whole-number stock quantities.
 - Implemented: unique customer IDs, required customer names, and basic email
   format validation.
-- A sale requires an existing customer and product, a positive whole-number
+- Implemented: a sale requires an existing customer and product, a positive whole-number
   quantity, and sufficient stock.
-- Successful sales receive unique sale IDs, calculate the total, and reduce
+- Implemented: successful sales receive unique sale IDs, calculate the total, and reduce
   stock. Failed sales leave records unchanged.
-- A later product price change must preserve totals already recorded in sales.
+- Implemented: later product price changes preserve totals already recorded in sales.
+- Remaining: final submission checks and documentation in Milestone 5.
 
 ## License
 

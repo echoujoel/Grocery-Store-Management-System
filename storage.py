@@ -7,6 +7,7 @@ import tempfile
 
 from customers import validate_customers
 from products import validate_products
+from sales import validate_sales
 
 
 # Resolve this relative to the source file, not the terminal's working directory.
@@ -26,8 +27,8 @@ def validate_store(data):
     """Check the collection structure before accepting or saving store data.
 
     Product and customer records are dictionaries keyed by their IDs. Sales
-    are a list of record dictionaries. Product and customer fields are also
-    checked; the sales milestone will add transaction field validation.
+    are a list of record dictionaries. Validate all record fields and ensure
+    transactions have unique IDs and refer to existing products and customers.
     """
     if not isinstance(data, dict) or set(data) != {"products", "customers", "sales"}:
         raise StorageError("Store data must contain products, customers, and sales.")
@@ -56,6 +57,10 @@ def validate_store(data):
         raise StorageError("The sales collection must be a list.")
     if any(not isinstance(sale, dict) for sale in data["sales"]):
         raise StorageError("Each sales record must be a dictionary.")
+    try:
+        validate_sales(data["sales"], data["products"], data["customers"])
+    except ValueError as error:
+        raise StorageError(f"Invalid sales data: {error}") from error
 
 
 def reject_nonfinite_number(value):

@@ -46,6 +46,7 @@ class StorageTests(unittest.TestCase):
             '{"products": {"": {}}, "customers": {}, "sales": []}',
             '{"products": {"P001": 1}, "customers": {}, "sales": []}',
             '{"products": {}, "customers": {}, "sales": [1]}',
+            '{"products": {}, "customers": {}, "sales": [{}]}',
             '{"products": {"P001": {"price": NaN}}, "customers": {}, "sales": []}',
         ]
         self.path.parent.mkdir()
