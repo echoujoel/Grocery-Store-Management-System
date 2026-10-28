@@ -3,12 +3,7 @@
 from decimal import Decimal
 import re
 
-
-def normalize_text(value, label):
-    """Trim a required text field or explain why it is invalid."""
-    if not isinstance(value, str) or not value.strip():
-        raise ValueError(f"{label} cannot be blank.")
-    return value.strip()
+from validation import normalize_text
 
 
 def normalize_price(value):

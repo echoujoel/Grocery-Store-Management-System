@@ -2,8 +2,10 @@
 
 from copy import deepcopy
 
-from products import add_product, display_products, get_product, normalize_text, update_product
+from customers import display_customers, register_customer
+from products import add_product, display_products, get_product, update_product
 from storage import StorageError, load_store, save_store
+from validation import normalize_text
 
 
 MENU = """
@@ -19,8 +21,6 @@ Grocery Store Management System
 """
 
 UPCOMING_FEATURES = {
-    "4": "Customer registration will be available in Milestone 3.",
-    "5": "Viewing customers will be available in Milestone 3.",
     "6": "Recording sales will be available in Milestone 4.",
     "7": "Viewing sales will be available in Milestone 4.",
 }
@@ -65,11 +65,26 @@ def update_product_from_input(store):
     return draft
 
 
+def register_customer_from_input(store):
+    """Collect customer details and save them before confirming registration."""
+    customer_id = normalize_text(input("Customer ID: "), "Customer ID")
+    if customer_id in store["customers"]:
+        raise ValueError(f"Customer ID '{customer_id}' already exists.")
+    name = input("Customer name: ")
+    email = input("Email address: ")
+
+    draft = deepcopy(store)
+    register_customer(draft["customers"], customer_id, name, email)
+    save_store(draft)
+    print(f"Customer '{customer_id}' registered and saved.")
+    return draft
+
+
 def main():
     """Load the store and repeat the menu until the user exits.
 
     Return a nonzero exit status if the store cannot be loaded safely.
-    Product changes are accepted only after a successful JSON save.
+    Product and customer changes are accepted only after a successful JSON save.
     """
     try:
         store = load_store()
@@ -96,15 +111,19 @@ def main():
                 store = update_product_from_input(store)
             elif choice == "3":
                 display_products(store["products"])
+            elif choice == "4":
+                store = register_customer_from_input(store)
+            elif choice == "5":
+                display_customers(store["customers"])
             elif choice in UPCOMING_FEATURES:
                 print(UPCOMING_FEATURES[choice])
             else:
                 print("Invalid choice. Please enter a number from 1 to 8.")
         except ValueError as error:
-            print(f"Invalid product: {error}")
+            print(f"Invalid input: {error}")
         except StorageError as error:
-            print(f"Product change was not saved: {error}")
-            print("The current inventory is unchanged. Check the file and try again.")
+            print(f"Change was not saved: {error}")
+            print("The current store records are unchanged. Check the file and try again.")
         except (EOFError, KeyboardInterrupt):
             print("\nGoodbye!")
             return 0

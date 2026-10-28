@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import tempfile
 
+from customers import validate_customers
 from products import validate_products
 
 
@@ -25,8 +26,8 @@ def validate_store(data):
     """Check the collection structure before accepting or saving store data.
 
     Product and customer records are dictionaries keyed by their IDs. Sales
-    are a list of record dictionaries. Product fields are also checked; later
-    feature modules will add customer and transaction field validation.
+    are a list of record dictionaries. Product and customer fields are also
+    checked; the sales milestone will add transaction field validation.
     """
     if not isinstance(data, dict) or set(data) != {"products", "customers", "sales"}:
         raise StorageError("Store data must contain products, customers, and sales.")
@@ -45,6 +46,11 @@ def validate_store(data):
         validate_products(data["products"])
     except ValueError as error:
         raise StorageError(f"Invalid product data: {error}") from error
+
+    try:
+        validate_customers(data["customers"])
+    except ValueError as error:
+        raise StorageError(f"Invalid customer data: {error}") from error
 
     if not isinstance(data["sales"], list):
         raise StorageError("The sales collection must be a list.")

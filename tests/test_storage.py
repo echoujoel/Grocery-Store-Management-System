@@ -40,6 +40,8 @@ class StorageTests(unittest.TestCase):
             "{broken json", "", "null", "[]", "{}",
             '{"products": [], "customers": {}, "sales": []}',
             '{"products": {}, "customers": [], "sales": []}',
+            '{"products": {}, "customers": {"C001": {}}, "sales": []}',
+            '{"products": {}, "customers": {"C001": {"name": "Joel", "email": "invalid"}}, "sales": []}',
             '{"products": {}, "customers": {}, "sales": {}}',
             '{"products": {"": {}}, "customers": {}, "sales": []}',
             '{"products": {"P001": 1}, "customers": {}, "sales": []}',
@@ -69,6 +71,7 @@ class StorageTests(unittest.TestCase):
             {"products": {1: {}}, "customers": {}, "sales": []},
             {"products": {"P001": {"price": float("inf")}}, "customers": {}, "sales": []},
             {"products": {"P001": {"name": object()}}, "customers": {}, "sales": []},
+            {"products": {}, "customers": {"C001": {"name": "Joel", "email": "invalid"}}, "sales": []},
         ]
         for store in invalid_stores:
             with self.subTest(store=store):
