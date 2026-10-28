@@ -269,17 +269,6 @@ See [TESTING.md](TESTING.md) for requirements coverage, the test scope, and a
 repeatable manual demonstration. Python 3.10 or newer is the target; other
 versions and operating systems have not been verified in this environment.
 
-## Submission and scope
-
-Submit the complete source folder, including all six Python modules, `tests/`,
-this README, `TESTING.md`, `data/store.example.json`, and the license. A fresh
-copy creates its own empty store file, so leave actual `data/store.json`
-records out of the submission.
-
-The application covers the assignment's terminal-based inventory, customer,
-sales, and reporting requirements. Each sale records one product. Customer
-editing, record deletion, currency conversion, and multiple simultaneous users
-are outside the current scope.
 
 ## License
 
