@@ -1,0 +1,15 @@
+# Python-generated files and local virtual environments.
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Actual store records stay on this computer; commit only the empty example.
+/data/store.json
+/data/.store-*.tmp
+
+# Local editor and operating system files.
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
