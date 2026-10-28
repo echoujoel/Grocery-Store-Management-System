@@ -64,6 +64,30 @@ class StorageTests(unittest.TestCase):
             load_store(self.path)
         self.assertEqual(self.path.read_bytes(), b"\xff\xfe")
 
+    def test_duplicate_json_keys_are_reported_without_discarding_records(self):
+        duplicate_key_files = [
+            '{"products": {}, "products": {}, "customers": {}, "sales": []}',
+            '{"products": {}, "customers": {"C001": {"name": "Joel", "email": "joel@example.com"}, '
+            '"C001": {"name": "Jane", "email": "jane@example.com"}}, "sales": []}',
+            '{"products": {}, "customers": {"C001": {"name": "Joel", "name": "Jane", '
+            '"email": "joel@example.com"}}, "sales": []}',
+        ]
+        self.path.parent.mkdir()
+        for contents in duplicate_key_files:
+            with self.subTest(contents=contents):
+                self.path.write_text(contents, encoding="utf-8")
+                with self.assertRaisesRegex(StorageError, "Duplicate JSON key"):
+                    load_store(self.path)
+                self.assertEqual(self.path.read_text(encoding="utf-8"), contents)
+
+    def test_excessively_nested_json_is_reported_and_preserved(self):
+        self.path.parent.mkdir()
+        contents = "[" * 2000 + "0" + "]" * 2000
+        self.path.write_text(contents, encoding="utf-8")
+        with self.assertRaises(StorageError):
+            load_store(self.path)
+        self.assertEqual(self.path.read_text(encoding="utf-8"), contents)
+
     def test_invalid_save_preserves_existing_records(self):
         original = load_store(self.path)
         original_bytes = self.path.read_bytes()

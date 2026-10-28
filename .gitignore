@@ -8,6 +8,9 @@ venv/
 /data/store.json
 /data/.store-*.tmp
 
+# Locally generated submission archives.
+/dist/
+
 # Local editor and operating system files.
 .vscode/
 .idea/

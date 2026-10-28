@@ -68,6 +68,16 @@ def reject_nonfinite_number(value):
     raise ValueError(f"Invalid JSON number: {value}")
 
 
+def reject_duplicate_keys(pairs):
+    """Reject repeated JSON keys instead of silently losing earlier records."""
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"Duplicate JSON key: {key}")
+        result[key] = value
+    return result
+
+
 def load_store(file_path=DATA_FILE):
     """Read store records, creating an empty JSON file on the first run.
 
@@ -77,12 +87,16 @@ def load_store(file_path=DATA_FILE):
     path = Path(file_path)
     try:
         with path.open("r", encoding="utf-8") as source:
-            data = json.load(source, parse_constant=reject_nonfinite_number)
+            data = json.load(
+                source,
+                parse_constant=reject_nonfinite_number,
+                object_pairs_hook=reject_duplicate_keys,
+            )
     except FileNotFoundError:
         data = create_empty_store()
         save_store(data, path)
         return data
-    except (OSError, ValueError) as error:
+    except (OSError, ValueError, RecursionError) as error:
         raise StorageError(f"Could not read store data at {path}: {error}") from error
 
     validate_store(data)

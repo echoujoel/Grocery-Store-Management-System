@@ -6,10 +6,11 @@ time using regular functions, modules, lists, and dictionaries.
 
 ## Current progress
 
-**Milestone 4: sales management.** All eight menu options are implemented.
+**Milestone 5: complete and ready for submission.** All eight menu options are implemented.
 You can manage products, register customers, record purchases, and view all
 store records. Successful changes are saved to JSON and loaded when you
-restart. Milestone 5 will complete the final submission checks and documentation.
+restart. The final verification passed all 84 tests, including checks that
+launch the actual program and restart it in separate processes.
 
 | Milestone | Scope | Status |
 | --- | --- | --- |
@@ -17,9 +18,9 @@ restart. Milestone 5 will complete the final submission checks and documentation
 | 2 | Add, update, and display products; validate IDs, prices, and stock | Complete |
 | 3 | Register and display customers; validate IDs, names, and email | Complete |
 | 4 | Record and display sales; calculate totals and update stock safely | Complete |
-| 5 | Test the complete workflow, unsuccessful transactions, and final documentation | Planned |
+| 5 | Test the complete workflow, unsuccessful transactions, and final documentation | Complete |
 
-Each completed milestone will be tested, committed, and pushed to GitHub.
+All five milestones have been tested and committed separately to GitHub.
 
 ## Requirements
 
@@ -47,6 +48,14 @@ python main.py
 On Windows, you can use `py main.py` if your Python installation provides the
 Python launcher. On Linux/macOS, the command may be `python3 main.py`.
 Check that your selected command reports Python 3.10 or newer with `--version`.
+
+If `python` is not recognized or opens the Microsoft Store on Windows, use
+the full path to your installed Python executable. In PowerShell, put `&`
+before a quoted executable path:
+
+```powershell
+& "C:\path\to\python.exe" main.py
+```
 
 The menu is:
 
@@ -197,6 +206,8 @@ On the first run, the application creates `data/store.json` with this structure:
   Products, customers, and sales are saved together.
 - Invalid JSON, invalid collection structures, and file access errors are
   reported. An existing invalid file is not silently reset or overwritten.
+- Repeated JSON keys are rejected, including duplicate product or customer
+  IDs in a manually edited file, instead of silently discarding earlier records.
 - Storage validates all record fields. Sales must have unique IDs, positive
   quantities and totals, and references to existing products and customers.
 
@@ -267,6 +278,7 @@ Grocery-Store-Management-System/
 |   |-- store.example.json   # Empty example tracked in Git
 |   `-- store.json           # Created locally at runtime; ignored by Git
 |-- tests/
+|   |-- test_cli.py          # Real terminal processes and complete workflows
 |   |-- test_main.py         # Menu and startup behavior
 |   |-- test_customers.py    # Customer registration and validation
 |   |-- test_products.py     # Product operations and rejected changes
@@ -274,6 +286,7 @@ Grocery-Store-Management-System/
 |   `-- test_storage.py      # Persistence and failure handling
 |-- .gitignore
 |-- LICENSE
+|-- TESTING.md               # Requirements coverage and submission checklist
 `-- README.md
 ```
 
@@ -300,7 +313,12 @@ checks cover exact totals, unique IDs, insufficient or zero stock, invalid
 quantities and references, failed saves, history display, price changes, and
 restoring transactions and stock on restart. All tests use isolated test data.
 
-## Business rules and remaining work
+**Final result:** 84 tests passed on Windows with Python 3.14.7. See
+[TESTING.md](TESTING.md) for the requirements checklist, exact test scope,
+and a repeatable demonstration. Other Python versions and operating systems
+have not been verified in this environment.
+
+## Business rules
 
 - Implemented: unique product IDs, required product names and IDs, positive
   prices, and nonnegative whole-number stock quantities.
@@ -311,7 +329,23 @@ restoring transactions and stock on restart. All tests use isolated test data.
 - Implemented: successful sales receive unique sale IDs, calculate the total, and reduce
   stock. Failed sales leave records unchanged.
 - Implemented: later product price changes preserve totals already recorded in sales.
-- Remaining: final submission checks and documentation in Milestone 5.
+
+## Submission
+
+Submit the complete source folder, including the README, test files,
+`TESTING.md`, and `data/store.example.json`. No package installation is needed.
+Do not include actual store records; the application creates `data/store.json`
+on its first run.
+
+A local ZIP of the completed commit is available at
+`dist/Grocery-Store-Management-System.zip` in the development workspace. It
+contains the source, tests, documentation, license, and empty JSON example.
+The generated ZIP itself is ignored by Git. For a copy from GitHub, use the
+repository's **Code > Download ZIP** option or clone the repository.
+
+The application supports one running instance at a time. Each sale records
+one product, and email validation checks common formats rather than delivery.
+These scope limits are described in the sections above.
 
 ## License
 
