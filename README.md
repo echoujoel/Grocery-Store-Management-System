@@ -1,36 +1,19 @@
 # Grocery Store Management System
 
-A menu-driven Python terminal application for managing a grocery store's
-products, customers, and sales. This project is being built one milestone at a
-time using regular functions, modules, lists, and dictionaries.
+A Python terminal application for managing grocery store inventory, registering
+customers, and recording sales. It uses ordinary functions and modules,
+dictionaries for products and customers, and a list for sales transactions.
+Records are saved to JSON so they remain available after the program closes.
 
-## Current progress
+The workflow is to add products, register customers, record their purchases,
+and review inventory and sales. Every successful purchase calculates a total
+and reduces the available stock.
 
-**Milestone 5: complete and ready for submission.** All eight menu options are implemented.
-You can manage products, register customers, record purchases, and view all
-store records. Successful changes are saved to JSON and loaded when you
-restart. The final verification passed all 84 tests, including checks that
-launch the actual program and restart it in separate processes.
+## Installation and startup
 
-| Milestone | Scope | Status |
-| --- | --- | --- |
-| 1 | Repository setup, menu, JSON storage, initial tests and documentation | Complete |
-| 2 | Add, update, and display products; validate IDs, prices, and stock | Complete |
-| 3 | Register and display customers; validate IDs, names, and email | Complete |
-| 4 | Record and display sales; calculate totals and update stock safely | Complete |
-| 5 | Test the complete workflow, unsuccessful transactions, and final documentation | Complete |
-
-All five milestones have been tested and committed separately to GitHub.
-
-## Requirements
-
-- Python 3.10 or newer.
-- A terminal such as PowerShell, Command Prompt, or a Linux/macOS shell.
-- Git if you want to clone the repository.
-
-Only the Python standard library is used. No additional packages are required.
-
-## Get started
+You need **Python 3.10 or newer** and a terminal. Git is needed only to clone
+the repository. The application uses the Python standard library, so there
+are no additional packages to install.
 
 Clone the repository and enter its directory:
 
@@ -39,25 +22,29 @@ git clone https://github.com/echoujoel/Grocery-Store-Management-System.git
 cd Grocery-Store-Management-System
 ```
 
-Run the application:
+Alternatively, download the repository as a ZIP, extract it, and open a terminal
+in the folder containing `main.py`.
+
+Check your Python version and start the application:
 
 ```sh
+python --version
 python main.py
 ```
 
-On Windows, you can use `py main.py` if your Python installation provides the
-Python launcher. On Linux/macOS, the command may be `python3 main.py`.
-Check that your selected command reports Python 3.10 or newer with `--version`.
-
-If `python` is not recognized or opens the Microsoft Store on Windows, use
-the full path to your installed Python executable. In PowerShell, put `&`
-before a quoted executable path:
+On Windows, you can use `py` if the Python launcher is configured. On Linux
+or macOS, your command may be `python3`. Use the same command when running tests.
+If `python` is not recognized or opens the Microsoft Store, use the full path
+to your installed interpreter. In PowerShell, prefix a quoted path with `&`:
 
 ```powershell
 & "C:\path\to\python.exe" main.py
 ```
 
-The menu is:
+## Main menu
+
+At startup, the application loads existing records or creates an empty store.
+It displays this menu and repeats it after each operation:
 
 ```text
 1. Add a product
@@ -70,14 +57,18 @@ The menu is:
 8. Exit the application
 ```
 
-Enter an option and press Enter. Invalid choices display a message and return
-to the menu. You can exit with option 8 or Ctrl+C.
+Enter an option and press Enter. Invalid choices produce a helpful message
+and return you to the menu.
 
-## Manage products
+## Complete workflow
 
-### Add a product (option 1)
+The following example follows one product and customer through the application.
+Use a fresh copy to reproduce it exactly, since these IDs may already exist
+in a store you have used before.
 
-Enter a unique product ID, name, price, and stock quantity. For example:
+### 1. Add inventory
+
+Choose **option 1** and enter:
 
 ```text
 Product ID: P001
@@ -87,36 +78,22 @@ Quantity in stock: 20
 Product 'P001' added and saved.
 ```
 
-- IDs and names are trimmed and cannot be blank.
-- IDs are case-sensitive: `P001` and `p001` are different IDs. Use a consistent
-  convention, such as `P001`, `P002`, and so on.
-- Prices must be positive, with up to two decimal places. Enter `5000` or
-  `12.50`, without currency symbols, thousands separators, or exponent notation.
-- Stock must be a whole number of zero or more; an out-of-stock product can
-  have zero units. Fractional quantities are rejected.
-- A duplicate ID is rejected without overwriting the existing product.
+Choose **option 3** to see the product's ID, name, price, and stock quantity.
+A duplicate ID is rejected without replacing the existing product.
 
-### Update a product (option 2)
+### 2. Update a product
 
-Enter an existing ID, then change its name, price, or stock. Press Enter at
-any field to keep its existing value. Enter `0` to set stock to zero. The ID
-stays fixed so future sales can continue referring to the same product.
+Choose **option 2**, enter `P001`, and change the name to `Brown rice`, the price
+to `5500`, and stock to `15`. Option 3 will show Brown rice at `5500.00` with
+15 units available.
 
-If you keep all existing values, the application reports that no changes were
-made. Invalid fields reject the entire update. A save error leaves both the
-active inventory and the existing JSON records unchanged.
+Each update prompt shows the current value. Press Enter to keep that value,
+or enter a replacement. Entering `0` sets stock to zero. The product ID stays
+fixed, and keeping every field unchanged skips the save.
 
-### View products (option 3)
+### 3. Register a customer
 
-The inventory lists each product's ID, name, price with two decimal places,
-and quantity in stock. If there are no products, the application explains how
-to add one.
-
-## Manage customers
-
-### Register a customer (option 4)
-
-Enter a unique customer ID, name, and email address. For example:
+Choose **option 4** and enter:
 
 ```text
 Customer ID: C001
@@ -125,227 +102,184 @@ Email address: joel@example.com
 Customer 'C001' registered and saved.
 ```
 
-- IDs, names, and email addresses are trimmed and cannot be blank.
-- Customer IDs are case-sensitive, like product IDs. `C001` and `c001` are
-  different IDs. A duplicate ID is rejected without replacing a customer.
-- Customer IDs and product IDs belong to separate collections.
-- Email validation checks common ASCII formats such as `joel@example.com`
-  and `joel.smith+shop@example.co.ug`. It rejects missing parts, spaces,
-  consecutive dots, and invalid domain labels. It does not confirm that an
-  address exists or support every specialized email format.
-- The email domain is lowercased; the part before `@` keeps its case.
-- Email addresses may be shared by customers; uniqueness applies to IDs.
-- Registration is confirmed only after saving. Invalid input, interrupted
-  entry, or a save failure leaves the current store records unchanged.
+Choose **option 5** to view customer IDs, names, and email addresses. Customer
+IDs must be unique within their collection. Email addresses may be shared;
+they do not serve as customer IDs.
 
-### View customers (option 5)
+### 4. Record a purchase
 
-The customer list shows every registered customer's ID, name, and email
-address. If there are no customers, the application explains how to register
-one. Customer changes and deletion are outside the assignment's requirements.
-
-## Manage sales
-
-### Record a sale (option 6)
-
-First add a product with option 1 and register a customer with option 4.
-Use options 3 and 5 to find their IDs. Then enter the customer ID, product ID,
-and quantity purchased. For the Rice and Joel examples above:
+Choose **option 6** and enter the registered customer, an existing product,
+and the quantity purchased:
 
 ```text
 Customer ID: C001
 Product ID: P001
-Rice: price 5000.00, stock 20.
+Brown rice: price 5500.00, stock 15.
 Quantity purchased: 3
-Sale 'S001' recorded and saved. Total: 15000.00
+Sale 'S001' recorded and saved. Total: 16500.00
 ```
 
-The sale leaves 17 units in stock. Each sale covers one product; choose
-option 6 again to record another purchase.
+The program calculates `5500.00 × 3 = 16500.00`, records the sale, and reduces
+stock from 15 to 12. Sale IDs are generated automatically using the first
+unused ID in the sequence `S001`, `S002`, and so on, including after a restart.
 
-- Both IDs must exist. IDs are trimmed and remain case-sensitive.
-- Purchase quantities must be positive whole numbers. Zero, negative,
-  fractional, blank, and nonnumeric quantities are rejected.
-- A purchase cannot exceed the available stock. Buying the last units is
-  allowed and leaves zero stock; further purchases are rejected until restocked.
-- Sale IDs are generated automatically using the first unused ID in the
-  sequence `S001`, `S002`, and so on. Saved transactions are checked to avoid
-  duplicate IDs, including after restarting.
-- Totals use exact decimal arithmetic and are saved with two decimal places.
-- A sale and its stock reduction are saved together. A rejected purchase or
-  save failure leaves both inventory and sales unchanged.
-- Later product price changes preserve the totals of earlier sales. Sales
-  records are historical; they are not recalculated from the current price.
+A purchase is rejected if either ID does not exist, the quantity is invalid,
+or stock is insufficient. Both inventory and sales remain unchanged. Buying
+all remaining units is allowed; replenish stock through option 2 before
+recording another purchase of that product.
 
-### View sales (option 7)
+### 5. Review store records
 
-The sales list shows sale ID, customer ID, product ID, quantity sold, and total
-price in transaction order. If no sales exist, the application explains how
-to record one.
+Use the reporting options whenever you need to check the store:
 
-## JSON storage
+| Option | Records displayed |
+| --- | --- |
+| 3 | Product ID, name, price, and stock quantity |
+| 5 | Customer ID, name, and email address |
+| 7 | Sale ID, customer ID, product ID, quantity sold, and total price |
 
-On the first run, the application creates `data/store.json` with this structure:
+After the example purchase, option 3 shows 12 units of `P001`. Option 7 lists
+`S001`, `C001`, `P001`, quantity `3`, and total `16500.00`. Sales appear in
+transaction order. Empty collections display guidance on adding a first record.
+
+Changing a product's price later affects future purchases while preserving
+the totals already recorded in sales.
+
+### 6. Exit and resume
+
+Choose **option 8** to exit. Ctrl+C during menu input or record entry also exits;
+an incomplete entry is discarded. Successful changes have already been saved,
+so there is no separate save command.
+
+Run `python main.py` again to load the same products, customers, stock levels,
+and sales history and continue working.
+
+## Validation rules
+
+| Field | Rule |
+| --- | --- |
+| Product and customer IDs | Required, trimmed, case-sensitive, and unique within their own collections |
+| Product and customer names | Required; surrounding whitespace is removed |
+| Product price | Positive, with up to two decimal places, such as `5000` or `12.50` |
+| Stock quantity | A whole number of zero or more |
+| Purchase quantity | A positive whole number that does not exceed available stock |
+| Email address | A common ASCII format, such as `joel@example.com` or `joel.smith+shop@example.co.ug` |
+
+Use a consistent ID convention, such as `P001` and `C001`. `P001` and `p001` are
+different IDs. Enter prices without currency symbols, thousands separators,
+or exponent notation, and use the same currency throughout the store.
+
+Email checks reject missing parts, spaces, consecutive dots, and invalid domain
+labels. The domain is lowercased while the part before `@` keeps its case.
+Validation checks format rather than whether an address exists, and does not
+support every specialized email format.
+
+Invalid input produces an explanation and returns to the menu. Updates are
+accepted together, so one invalid field prevents a partial product update.
+
+## JSON storage and backups
+
+The program creates `data/store.json` on its first run and loads it on subsequent
+starts. Products and customers are dictionaries keyed by ID; sales are stored
+in a list. After the example workflow, the file contains:
 
 ```json
 {
-  "products": {},
-  "customers": {},
-  "sales": []
+  "products": {
+    "P001": {
+      "name": "Brown rice",
+      "price": "5500.00",
+      "quantity": 12
+    }
+  },
+  "customers": {
+    "C001": {
+      "name": "Joel",
+      "email": "joel@example.com"
+    }
+  },
+  "sales": [
+    {
+      "sale_id": "S001",
+      "customer_id": "C001",
+      "product_id": "P001",
+      "quantity": 3,
+      "total_price": "16500.00"
+    }
+  ]
 }
 ```
 
-- Products and customers are dictionaries keyed by their unique IDs.
-- Sales are stored as a list of transaction dictionaries.
-- The file is loaded at startup. Product additions, product updates, customer
-  registrations, and sales save after validation, so records remain available
-  after restarting.
-- The data path is relative to `storage.py`, so starting the application from
-  another working directory still uses the same file.
-- Saves write to a temporary file before replacing the existing JSON file.
-  Products, customers, and sales are saved together.
-- Invalid JSON, invalid collection structures, and file access errors are
-  reported. An existing invalid file is not silently reset or overwritten.
-- Repeated JSON keys are rejected, including duplicate product or customer
-  IDs in a manually edited file, instead of silently discarding earlier records.
-- Storage validates all record fields. Sales must have unique IDs, positive
-  quantities and totals, and references to existing products and customers.
+Prices and totals are saved as decimal strings and processed with Python's
+`Decimal` type to preserve exact amounts. The data path is relative to the
+source code, so starting from another working directory uses the same file.
 
-Inside the `products` collection, each product uses its ID as the dictionary key:
+Each successful change saves all collections together. A temporary file is
+written before replacing the existing JSON file, and success is confirmed only
+after saving. A failed save leaves active records and the existing file
+unchanged, keeping a sale and its stock reduction together.
 
-```json
-{
-  "P001": {
-    "name": "Rice",
-    "price": "5000.00",
-    "quantity": 20
-  }
-}
-```
+Malformed JSON, duplicate keys, invalid records, and access errors produce
+messages rather than silently resetting or overwriting existing files. If
+startup fails, preserve the file and restore a valid backup before trying again.
 
-New prices and sale totals are stored as decimal strings and validated with
-Python's `Decimal` type to preserve exact amounts. Numeric prices from the initial
-storage examples are also accepted when valid. All prices in a store should
-use the same currency; currency conversion is outside this project's scope.
+To back up records, close the application and copy `data/store.json` somewhere
+safe. To restore them, close the application and replace the file with a known
+valid backup. Run one application instance at a time.
 
-Inside the `customers` collection, each customer uses its ID as the key:
+The repository includes an empty `data/store.example.json`. Actual store data
+is ignored by Git, keeping customer details and transactions out of the source
+repository.
 
-```json
-{
-  "C001": {
-    "name": "Joel",
-    "email": "joel@example.com"
-  }
-}
-```
-
-The `sales` collection is a list of transaction dictionaries:
-
-```json
-[
-  {
-    "sale_id": "S001",
-    "customer_id": "C001",
-    "product_id": "P001",
-    "quantity": 3,
-    "total_price": "15000.00"
-  }
-]
-```
-
-`data/store.example.json` is a committed empty example. Actual `data/store.json`
-records are ignored by Git to keep local customer and transaction data out of
-the repository.
-
-Use one running application instance at a time. Concurrent editing is outside
-this project's scope. To back up your records, close the application and copy
-`data/store.json` somewhere safe. To restore a backup, close the application and
-replace that file with a known valid copy. If a file is damaged, preserve a copy
-before attempting repairs; using the empty example discards the previous
-records from the application's view.
-
-## Project files
+## Project structure
 
 ```text
 Grocery-Store-Management-System/
-|-- main.py                  # Terminal menu and application entry point
-|-- products.py              # Product validation, operations, and inventory display
+|-- main.py                  # Menu, prompts, and application entry point
+|-- products.py              # Product validation, updates, and inventory display
 |-- customers.py             # Customer validation, registration, and listings
 |-- sales.py                 # Transactions, exact totals, and sales history
-|-- validation.py            # Required-text validation shared by feature modules
 |-- storage.py               # JSON validation, loading, and saving
+|-- validation.py            # Shared required-text validation
 |-- data/
-|   |-- store.example.json   # Empty example tracked in Git
-|   `-- store.json           # Created locally at runtime; ignored by Git
-|-- tests/
-|   |-- test_cli.py          # Real terminal processes and complete workflows
-|   |-- test_main.py         # Menu and startup behavior
-|   |-- test_customers.py    # Customer registration and validation
-|   |-- test_products.py     # Product operations and rejected changes
-|   |-- test_sales.py        # Sales rules, menu integration, and atomic saving
-|   `-- test_storage.py      # Persistence and failure handling
+|   |-- store.example.json   # Empty storage example tracked in Git
+|   `-- store.json           # Created locally; ignored by Git
+|-- tests/                   # Function, menu, storage, and terminal tests
+|-- TESTING.md               # Test report and demonstration checklist
+|-- README.md
 |-- .gitignore
-|-- LICENSE
-|-- TESTING.md               # Requirements coverage and submission checklist
-`-- README.md
+`-- LICENSE
 ```
 
-## Run the tests
+## Testing
 
-From the project directory:
+Run the automated tests from the project directory:
 
 ```sh
 python -m unittest discover -s tests -v
 ```
 
-Use `py` or `python3` instead of `python` if that is your installed command.
-Tests use temporary files and do not change actual store records.
+The verified result is **84 tests passed on Windows with Python 3.14.7**.
+Checks cover successful operations, invalid inputs, duplicate IDs, unavailable
+stock, exact totals, failed saves, malformed files, and persistence. Five
+acceptance tests launch the actual program in temporary copies to verify
+complete workflows and process restarts. Real store records are untouched.
 
-Current checks cover first-run file creation, saving and reloading records,
-malformed or unreadable data, invalid saves, failed file replacement, menu
-repetition and clean exits. Product checks cover duplicate
-IDs, missing records, blank fields, invalid prices and stock, partial updates,
-failed saves, interrupted entry, inventory display, and persistence across an
-application restart. Customer checks cover registration, duplicate IDs, email
-formats, invalid stored records, failed saves, interrupted entry, customer
-listings, and persistence while preserving existing products and sales. Sales
-checks cover exact totals, unique IDs, insufficient or zero stock, invalid
-quantities and references, failed saves, history display, price changes, and
-restoring transactions and stock on restart. All tests use isolated test data.
+See [TESTING.md](TESTING.md) for requirements coverage, the test scope, and a
+repeatable manual demonstration. Python 3.10 or newer is the target; other
+versions and operating systems have not been verified in this environment.
 
-**Final result:** 84 tests passed on Windows with Python 3.14.7. See
-[TESTING.md](TESTING.md) for the requirements checklist, exact test scope,
-and a repeatable demonstration. Other Python versions and operating systems
-have not been verified in this environment.
+## Submission and scope
 
-## Business rules
+Submit the complete source folder, including all six Python modules, `tests/`,
+this README, `TESTING.md`, `data/store.example.json`, and the license. A fresh
+copy creates its own empty store file, so leave actual `data/store.json`
+records out of the submission.
 
-- Implemented: unique product IDs, required product names and IDs, positive
-  prices, and nonnegative whole-number stock quantities.
-- Implemented: unique customer IDs, required customer names, and basic email
-  format validation.
-- Implemented: a sale requires an existing customer and product, a positive whole-number
-  quantity, and sufficient stock.
-- Implemented: successful sales receive unique sale IDs, calculate the total, and reduce
-  stock. Failed sales leave records unchanged.
-- Implemented: later product price changes preserve totals already recorded in sales.
-
-## Submission
-
-Submit the complete source folder, including the README, test files,
-`TESTING.md`, and `data/store.example.json`. No package installation is needed.
-Do not include actual store records; the application creates `data/store.json`
-on its first run.
-
-A local ZIP of the completed commit is available at
-`dist/Grocery-Store-Management-System.zip` in the development workspace. It
-contains the source, tests, documentation, license, and empty JSON example.
-The generated ZIP itself is ignored by Git. For a copy from GitHub, use the
-repository's **Code > Download ZIP** option or clone the repository.
-
-The application supports one running instance at a time. Each sale records
-one product, and email validation checks common formats rather than delivery.
-These scope limits are described in the sections above.
+The application covers the assignment's terminal-based inventory, customer,
+sales, and reporting requirements. Each sale records one product. Customer
+editing, record deletion, currency conversion, and multiple simultaneous users
+are outside the current scope.
 
 ## License
 
