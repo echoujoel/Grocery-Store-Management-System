@@ -5,6 +5,8 @@ import os
 from pathlib import Path
 import tempfile
 
+from products import validate_products
+
 
 # Resolve this relative to the source file, not the terminal's working directory.
 DATA_FILE = Path(__file__).resolve().parent / "data" / "store.json"
@@ -23,8 +25,8 @@ def validate_store(data):
     """Check the collection structure before accepting or saving store data.
 
     Product and customer records are dictionaries keyed by their IDs. Sales
-    are a list of record dictionaries. Later feature modules validate the
-    individual fields and transaction rules.
+    are a list of record dictionaries. Product fields are also checked; later
+    feature modules will add customer and transaction field validation.
     """
     if not isinstance(data, dict) or set(data) != {"products", "customers", "sales"}:
         raise StorageError("Store data must contain products, customers, and sales.")
@@ -38,6 +40,11 @@ def validate_store(data):
                 raise StorageError(f"Each {collection} ID must be a nonempty string.")
             if not isinstance(record, dict):
                 raise StorageError(f"Each {collection} record must be a dictionary.")
+
+    try:
+        validate_products(data["products"])
+    except ValueError as error:
+        raise StorageError(f"Invalid product data: {error}") from error
 
     if not isinstance(data["sales"], list):
         raise StorageError("The sales collection must be a list.")
